@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="publicport" content="width=device-width, initial-scale=1.0">
+  <title>DESAFIO PROCESS BARRIONUEVO</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/normalizr@3.6.1/dist/normalizr.browser.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script defer src="js/denormalize.js"></script>
+  <script defer src="js/templates.js"></script>
+  <script defer src="js/session.js"></script>
+  <script defer src="js/main.js"></script>
+
+
+</head>
+
+<body>
+
+  <div class="container" id="sessionUser"></div>
+
+  <div id="newProduct"></div>
+
+  <br>
+  <br id="tablaProd">
+   
+  <div class="container">
+   <div class="alert alert-primary text-center" role="alert">
+     PRODUCTS
+   </div>
+ </div>
+  
+  <div id="tabla"></div> 
+ 
+  <br> 
+  <br id="tablaChat">
+
+  <div class="container">
+    <div class="alert alert-primary text-center" role="alert">
+      MESSAGES
+    </div>
+
+    <div id= "" class="row">
+      <label for="userEmail" class="form-label">USER</label>
+      <div class="col-6 mb-3">      
+        <input type="email" class="form-control" id="userEmail" aria-describedby="pictureHelp">
+        <div id="pictureHelp" class="form-text">EMAIL</div>
+      </div>
+      <div class="col-6 mb-3">      
+        <input type="text" class="form-control" id="userName" aria-describedby="pictureHelp1">
+        <div id="pictureHelp1" class="form-text">NAME</div>
+      </div>
+      <div class="col-6 mb-3">      
+        <input type="text" class="form-control" id="userSurname" aria-describedby="pictureHelp2">
+        <div id="pictureHelp2" class="form-text">LASTNAME</div>
+      </div>
+      <div class="col-6 mb-3">      
+        <input type="number" class="form-control" id="userAge" aria-describedby="pictureHelp3">
+        <div id="pictureHelp3" class="form-text">AGE</div>
+      </div>
+      <div class="col-6 mb-3">      
+        <input type="text" class="form-control" id="userNickname" aria-describedby="pictureHelp4">
+        <div id="pictureHelp4" class="form-text">NICKNAME</div>
+      </div>
+      
+
+      <hr>
+      <div id="chat"></div>
+      <hr>
+
+      <div class="col mb-3">      
+        <input type="text" class="form-control" id="userMsj" aria-describedby="pHelp">
+        <div id="pHelp" class="form-text">Write your message ...</div>
+      </div>
+      <div class="col">
+        <button id="sendBtn" type="" class="btn btn-primary">SEND</button> 
+      </div>
+    </div>
+
+    <hr>
+    
+    
+
+  </div>
+
+</body>
+</html>
