@@ -6,6 +6,18 @@ const { config, staticFiles } = require('./config/environment')
 const { Server: HttpServer } = require('http')
 const { Server: Socket } = require('socket.io')
 
+const { config, staticFiles } = require('../config/environment')
+const cluster = require('cluster')
+const numCPUs = require('os').cpus().length
+
+
+const baseProcces = () => {
+
+  cluster.on('exit', (worker, code, signal) => {
+    console.log(`Proceso ${worker.process.pid} caido!`)
+    cluster.fork()
+  })}
+
 const productRouter = require('./routes/productRouter')
 const sessionRouter = require('./routes/sessionRouter')
 const infoRouter = require('./routes/infoRouter')
@@ -68,8 +80,36 @@ app.use('/info', infoRouter)
 
 
 
-const PORT = ( config.port) ? config.port : 8080
+let PORT = ( config.port) ? config.port : 8080 
+
+  if ( config.mode === 'CLUSTER') { 
+    PORT = config.same === 1 ? PORT + cluster.worker.id - 1 : PORT
+  } 
+
 const server = httpServer.listen(PORT, () => {
     console.log(`-------------- SERVER READY LISTENING IN PORT ${PORT} --------------`)
 })
 server.on('error', error => console.log(`Error en servidor ${error}`))
+
+
+
+if ( config.mode != 'CLUSTER' ) { 
+
+  //-- Servidor FORK
+  console.log('Server en modo FORK')
+  console.log('-------------------')
+  baseProcces()
+  } else { 
+
+    //-- Servidor CLUSTER   
+    if (cluster.isPrimary) {
+      console.log('Server en modo CLUSTER')
+      console.log('----------------------')
+      for (let i = 0; i < numCPUs; i++) { 
+        cluster.fork()
+      }
+    } else {
+      baseProcces()
+    }
+  }
+

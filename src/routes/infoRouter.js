@@ -4,6 +4,7 @@ const { Router } = express
 const infoRouter = Router()
 
 const parseArgs = require('minimist')(process.argv)
+const numCPUs = require('os').cpus().length
 
 infoRouter.get('/', async (req, res) => {
  
@@ -14,6 +15,7 @@ infoRouter.get('/', async (req, res) => {
   table += `<tr><td>Version de node.js</td><td>${process.versions.node}</td></tr>`
   table += `<tr><td>Memoria reservada</td><td>${(process.memoryUsage().heapTotal / (1024 * 1024 )).toFixed(2)} MB</td></tr>`
   table += `<tr><td>Process id</td><td>${process.pid}</td></tr>`
+  table += `<tr><td>Numero de procesadores</td><td>${numCPUs}</td></tr>`
   table += `<tr><td>Path de ejecucion</td><td>${parseArgs._[2]}</td></tr>`
   table += `<tr><td>Carpeta del proyecto</td><td>${parseArgs._[1]}</td></tr>`
   table += '</table>'
