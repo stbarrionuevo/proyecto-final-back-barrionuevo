@@ -1,0 +1,12 @@
+nodemon src/server.js -m FORK -p 8081
+nodemon src/server.js -m CLUSTER -p 8082
+
+forever start -w src/server.js -m FORK -p 8081
+forever start -w src/server.js -m CLUSTER -p 8082
+forever list
+
+pm2 start src/server.js --name="Server1" --watch -- 8081
+pm2 start src/server.js --name="Server2" --watch -i max -- 8082
+
+nodemon src/server.js -m FORK -p 8081
+nodemon src/server.js -m CLUSTER -p 8082 -a 1 
