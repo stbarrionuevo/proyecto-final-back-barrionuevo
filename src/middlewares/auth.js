@@ -16,6 +16,24 @@ passport.use('login', new LocalStrategy(
 ))
 
 
+passport.use('googleauth', new Strategy(
+  async function ( username, password, done ) {
+    const googleUser = await decodedToken( password )
+    const userInDb = await users.checkUser ( username, '' )
+    if ( userInDb.msg != 'No existe usuario' & googleUser.email === username ) {     
+      return done ( null, { username: username })
+    } 
+    if ( userInDb.msg === 'No existe usuario' & googleUser.email === username ) {
+      await users.addUser (username, password)
+      return done ( null, { username: username })
+    }
+    logger.info(`Usuario no valido`)
+    return done( null, false)
+  }
+))
+
+
+
 passport.use('register', new LocalStrategy(
   async function( username, password, done ) {
     if ( await users.addUser (username, password ) ) {

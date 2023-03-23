@@ -2,7 +2,7 @@ const express = require('express')
 const expressSession = require('express-session')
 const MongoStore = require('connect-mongo')
 const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true }
-const { config, staticFiles } = require('./config/environment')
+
 const { Server: HttpServer } = require('http')
 const { Server: Socket } = require('socket.io')
 
@@ -95,13 +95,13 @@ server.on('error', error => console.log(`Error en servidor ${error}`))
 
 if ( config.mode != 'CLUSTER' ) { 
 
-  //-- Servidor FORK
+ 
   console.log('Server en modo FORK')
   console.log('-------------------')
   baseProcces()
   } else { 
 
-    //-- Servidor CLUSTER   
+ 
     if (cluster.isPrimary) {
       console.log('Server en modo CLUSTER')
       console.log('----------------------')

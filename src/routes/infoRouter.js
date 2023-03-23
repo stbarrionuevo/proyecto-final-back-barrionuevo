@@ -5,6 +5,7 @@ const infoRouter = Router()
 
 const parseArgs = require('minimist')(process.argv)
 const numCPUs = require('os').cpus().length
+const { logger, loggererr } = require('../log/logger')
 
 infoRouter.get('/', async (req, res) => {
  
@@ -20,6 +21,8 @@ infoRouter.get('/', async (req, res) => {
   table += `<tr><td>Carpeta del proyecto</td><td>${parseArgs._[1]}</td></tr>`
   table += '</table>'
 
+  logger.info(`Ruta: /info, metodo: ${req.method}`)
+  console.log(tabla)
   res.send(table)
 })
 

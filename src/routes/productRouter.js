@@ -7,9 +7,12 @@ const { Router } = express
 const productRouter = Router() 
 
 
+const { logger, loggererr } = require('../log/logger')
+
 
 productRouter.get('/productos', async (req, res) => {
   const allProducts = await products.getAll()
+  logger.info(`Ruta: /api${req.url}, metodo: ${req.method}`)
   res.json( allProducts )
 })
 
@@ -18,8 +21,14 @@ productRouter.get('/productos', async (req, res) => {
 productRouter.get('/productos/:id', async (req, res) => {
   const id = Number(req.params.id)
   const product = await products.getById( id )
-  product ? res.json( product )
-    : res.status(404).send({ error: 'producto no encontrado'})
+  if ( product ) {
+    logger.info(`Ruta: /api${req.url}, metodo: ${req.method}`)
+    res.json( product )
+  } else {
+    loggererr.error(`Producto id: ${id} no encontrado`) 
+    res.status(404).send({ error: 'producto no encontrado'})
+  }
+
 })
 
 
@@ -37,8 +46,10 @@ productRouter.put('/productos/:id', async (req, res) => {
   const productToModify = req.body
 
   if(await products.modifyById( id, productToModify )){
+    logger.info(`Ruta: /api${req.url}, metodo: ${req.method}`)
     res.send({ message: 'producto modificado'})
   } else {
+    loggererr.error(`Producto id: ${id} no encontrado`)
     res.status(404).send({ error: 'producto no encontrado'})
   }
 })
@@ -47,8 +58,10 @@ productRouter.put('/productos/:id', async (req, res) => {
 productRouter.delete('/productos/:id', async (req, res) => {
   const id = req.params.id
   if (await products.deleteById(id)) {
+    logger.info(`Ruta: /api${req.url}, metodo: ${req.method}`)
     res.send({ message: 'producto borrado'})
   } else {
+    loggererr.error(`Producto id: ${id} no encontrado`) 
     res.status(404).send({ error: 'producto no encontrado'})
   }
 })

@@ -3,14 +3,16 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/server.js",
+
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ."
+    "start": "0x src/server.js"
   },
   "keywords": [],
   "author": "Santiago Barrionuevo",
   "license": "ISC",
   "dependencies": {
+    "autocannon": "^7.10.0",
     "bcrypt": "^5.1.0",
     "connect-mongo": "^4.6.0",
     "cookie-parser": "^1.4.6",
@@ -20,6 +22,7 @@
     "express-session": "^1.17.3",
     "firebase": "^9.17.2",
     "knex": "^2.4.2",
+    "log4js": "^6.9.1",
     "minimist": "^1.2.8",
     "mongoose": "^7.0.0",
     "mysql": "^2.18.1",
