@@ -1,4 +1,4 @@
-async function userLogged() { //verifica si hay usuario logeeado
+async function userLogged() { 
     let user
     await fetch(`http://localhost:${location.port}/session/`, {
       method: 'GET',
@@ -12,14 +12,14 @@ async function userLogged() { //verifica si hay usuario logeeado
   
   
   
-  function userLoggedTemplates(user) { // genera las vistas para usuario logueado
+  function userLoggedTemplates(user) { 
     document.querySelector('#sessionUser').innerHTML = logOkTemplate(user)
     document.querySelector('#newProduct').innerHTML = newProductTemplate()
   }
   
   
   
-  function productLoad() { // escucha el formulario de carga de productos
+  function productLoad() { 
     const formulario = document.getElementById('formulario')
     formulario.addEventListener('submit', e => {
       e.preventDefault()
@@ -42,7 +42,7 @@ async function userLogged() { //verifica si hay usuario logeeado
   
   
   
-  async function userLogout( user ){ // cierra secion de usuario
+  async function userLogout( user ){ 
     fetch(`http://localhost:${location.port}/session/logout/`, {
       method: 'POST',
     })
@@ -57,7 +57,7 @@ async function userLogged() { //verifica si hay usuario logeeado
   }
   
   
-  function logged( user ){ //ejecuta las acciones necesarias luego de logueado el usuario
+  function logged( user ){ 
     userLoggedTemplates( user )
     productLoad()
     document.getElementById("logoutBtn").addEventListener("click", ev => {

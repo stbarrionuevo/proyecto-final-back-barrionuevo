@@ -1,7 +1,7 @@
 const express = require('express')
 const { products } = require('../class/productContainer')
 const { mock5 } = require('../class/mockFaker')
-const { fork } = require('child_process')
+
 
 const { Router } = express   
 const productRouter = Router() 
@@ -71,7 +71,7 @@ productRouter.get('/productos-test', async (req, res) => {
   const allProducts = await mock5.getAll()
 
   let tabla = '<table>'
-  tabla += '<tr><th>Producto</th><th>Precio</th><th>Imagen</th></tr>'
+  tabla += '<tr><th>Product</th><th>Price</th><th>Image</th></tr>'
   allProducts.forEach((fila) => {
     tabla += `<tr>
                 <td>${fila.title}</td>

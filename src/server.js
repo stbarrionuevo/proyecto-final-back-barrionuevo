@@ -1,22 +1,25 @@
 const express = require('express')
 const expressSession = require('express-session')
+
+const { logger, loggererr } = require('../log/logger')
 const MongoStore = require('connect-mongo')
 const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true }
 
 const { Server: HttpServer } = require('http')
 const { Server: Socket } = require('socket.io')
-
 const { config, staticFiles } = require('../config/environment')
+
+
 const cluster = require('cluster')
 const numCPUs = require('os').cpus().length
-
-
 const baseProcces = () => {
 
   cluster.on('exit', (worker, code, signal) => {
     console.log(`Proceso ${worker.process.pid} caido!`)
     cluster.fork()
   })}
+
+
 
 const productRouter = require('./routes/productRouter')
 const sessionRouter = require('./routes/sessionRouter')
@@ -28,7 +31,6 @@ const io = new Socket(httpServer)
 
 const { products } = require('./class/productContainer')
 const { chats } = require('./class/chatContainer')
-
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -47,8 +49,9 @@ app.use(expressSession({
 }))
 
 
+
 io.on('connection', async socket => {
-  console.log('Nuevo cliente conectado!')
+  console.log('New connection!')
 
 
   socket.emit('productos', await products.getAll())
@@ -72,10 +75,7 @@ io.on('connection', async socket => {
 
 
 app.use('/session', sessionRouter)
-
-
 app.use('/api', productRouter)
-
 app.use('/info', infoRouter)
 
 
@@ -89,22 +89,21 @@ let PORT = ( config.port) ? config.port : 8080
 const server = httpServer.listen(PORT, () => {
     console.log(`-------------- SERVER READY LISTENING IN PORT ${PORT} --------------`)
 })
-server.on('error', error => console.log(`Error en servidor ${error}`))
+server.on('error', error => console.log(`ERROR IN SERVER ${error}`))
 
 
 
 if ( config.mode != 'CLUSTER' ) { 
 
  
-  console.log('Server en modo FORK')
-  console.log('-------------------')
+  console.log('Server FORK')
   baseProcces()
   } else { 
 
  
     if (cluster.isPrimary) {
-      console.log('Server en modo CLUSTER')
-      console.log('----------------------')
+      console.log('SERVER CLUSTER')
+   
       for (let i = 0; i < numCPUs; i++) { 
         cluster.fork()
       }
