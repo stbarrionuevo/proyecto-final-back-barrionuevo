@@ -29,8 +29,10 @@ const app = express()
 const httpServer = new HttpServer(app)
 const io = new Socket(httpServer)
 
-const { products } = require('./class/productContainer')
-const { chats } = require('./class/chatContainer')
+
+const { newProductController, getAllProductsController } = require('./controllers/productsController')
+const { getAllChatsController, addChatMsgController } = require('./controllers/chatsController')
+
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -54,21 +56,21 @@ io.on('connection', async socket => {
   console.log('New connection!')
 
 
-  socket.emit('productos', await products.getAll())
+  socket.emit('productos', await getAllProductsController())
 
   socket.on('update', async producto => {
-    await products.add( producto )
-    io.sockets.emit('productos', await products.getAll())
+    await newProductController( producto )
+    io.sockets.emit('productos', await getAllProductsController())
   })
 
-  socket.emit('mensajes', await chats.getAll())
+  socket.emit('mensajes', await getAllChatsController())
 
 
   socket.on('newMsj', async mensaje => {
       mensaje.date = new Date().toLocaleString()
-      await chats.add( mensaje )
+      await addChatMsgController( mensaje )
       
-      io.sockets.emit('mensajes', await chats.getAll())
+      io.sockets.emit('mensajes', await getAllChatsController())
   })
 
 })

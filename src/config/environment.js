@@ -8,10 +8,10 @@ const config = {
 
 require('dotenv').config()
 const staticFiles = process.env.STATICFILES
-
-
-
-module.exports = { config, staticFiles }
+const persistence = process.env.PERSISTENCE
 
 
 module.exports = { config, staticFiles }
+
+
+module.exports = { config, staticFiles, persistence }
