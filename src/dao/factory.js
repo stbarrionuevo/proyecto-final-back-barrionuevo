@@ -1,35 +1,35 @@
 const { persistence } = require('../config/environment')
-const MongoProductDao = require('./mongoProductDao')
-const MongoUserDao = require('./mongoUserDao')
-const MongoChatDao = require('./mongoChatDao')
-const MemoryProductDao = require('./memoryProductDao')
-const MemoryUserDao = require('./memoryUserDao')
-const MemoryChatDao = require('./memoryChatDao')
+const MongoProductDAO = require('./mongoProductDAO')
+const MongoUserDAO = require('./mongoUserDAO')
+const MongoChatDAO = require('./mongoChatDAO')
+const MemoryProductDAO = require('./memoryProductDAO')
+const MemoryUserDAO = require('./memoryUserDAO')
+const MemoryChatDAO = require('./memoryChatDAO')
 
 
 
-let productsDao = undefined,
-  usersDao = undefined,
-  chatsDao = undefined
+let productsDAO = undefined,
+  usersDAO = undefined,
+  chatsDAO = undefined
 
-const getDao = async() => {
-  if( !productsDao ) {
+const getDAO = async() => {
+  if( !productsDAO ) {
     if ( persistence === 'MEMORY' ) {
-      productsDao = new MemoryProductDao([])
-      usersDao = new MemoryUserDao([])
-      chatsDao = new MemoryChatDao({ chat: [] })
+      productsDAO = new MemoryProductDAO([])
+      usersDAO = new MemoryUserDAO([])
+      chatsDAO = new MemoryChatDAO({ chat: [] })
     } else {
-      productsDao = await new MongoProductDao()
-      usersDao = await new MongoUserDao()
-      chatsDao = await new MongoChatDao()
+      productsDAO = await new MongoProductDAO()
+      usersDAO = await new MongoUserDAO()
+      chatsDAO = await new MongoChatDAO()
     }
   }
   return {
-    products: productsDao,
-    users: usersDao,
-    chats: chatsDao
+    products: productsDAO,
+    users: usersDAO,
+    chats: chatsDAO
   }
 }
 
 
-module.exports = getDao
+module.exports = getDAO
