@@ -1,89 +1,106 @@
-const express = require('express')
-const { products } = require('../class/productContainer')
-const { mock5 } = require('../class/mockFaker')
-
-
-const { Router } = express   
+const { Router } = require('express')  
 const productRouter = Router() 
 
-
+const { newProductController, getAllProductsController, getProductByIdController, delProductByIdController } = require('../controllers/productsController')
+const { mock5 } = require('../dao/mockFaker')
 const { logger, loggererr } = require('../log/logger')
 
 
-productRouter.get('/productos', async (req, res) => {
-  const allProducts = await products.getAll()
-  logger.info(`Ruta: /api${req.url}, metodo: ${req.method}`)
-  res.json( allProducts )
-})
 
-
-
-productRouter.get('/productos/:id', async (req, res) => {
-  const id = Number(req.params.id)
-  const product = await products.getById( id )
-  if ( product ) {
+productRouter.get(
+  '/productos',
+  async (req, res) => {
+    const products = await getAllProductsController()
     logger.info(`Ruta: /api${req.url}, metodo: ${req.method}`)
-    res.json( product )
-  } else {
-    loggererr.error(`Producto id: ${id} no encontrado`) 
-    res.status(404).send({ error: 'producto no encontrado'})
+    res.json( products )
   }
-
-})
-
+)
 
 
-productRouter.post('/productos', async (req, res) => {
-  const productToAdd = req.body
-  await products.add( productToAdd )
-  res.redirect('/')
-})
+productRouter.get(
+  '/productos/:id',
+  async (req, res) => {
+    const product = await getProductByIdController( req.params.id )
+    if ( product ) {
+      logger.info(`Ruta: /api${req.url}, metodo: ${req.method}`)
+      res.json( product )
+    } else {
+      loggererr.error(`Producto id: ${id} not found`) 
+      res.status(404).send({ error: 'product not found'})
+    }
+  }
+)
 
 
 
-productRouter.put('/productos/:id', async (req, res) => {
-  const id = Number(req.params.id)
-  const productToModify = req.body
+productRouter.post(
+  '/productos/nuevo',
+  async (req, res) => {
+    const productToAdd = req.body
+    const loaded = await newProductController ( productToAdd )
+    if ( loaded ) {
+      logger.info(`Product added succesfully`)
+    } else {
+      logger.info(`Cannot add product, wrong data`)
+    }
+    res.redirect('/')
+  }
+)
 
-  if(await products.modifyById( id, productToModify )){
+
+productRouter.put(
+  '/productos/:id',
+  async (req, res) => {
+    if(await modifyProductByIdController( req.params.id, req.body )){
+      logger.info(`Ruta: /api${req.url}, metodo: ${req.method}`)
+      res.send({ message: 'product has been update'})
+    } else {
+      loggererr.error(`Product id: ${id} not found`) 
+      res.status(404).send({ error: 'product not found'})
+    }
+  }
+)
+
+
+
+productRouter.delete(
+  '/productos/:id',
+  async (req, res) => {
+    const id = req.params.id
+    if (await delProductByIdController(id)) {
+      logger.info(`Ruta: /api${req.url}, metodo: ${req.method}`)
+      res.send({ message: 'product delete'})
+    } else {
+      loggererr.error(`Product id: ${id} not found`) 
+      res.status(404).send({ error: 'product not found'})
+    }
+  }
+) 
+
+
+
+productRouter.get(
+  '/products-test',
+  async (req, res) => {
+    const allProducts = await mock5.getAll()
+    let table = '<table>'
+    table += '<tr><th>Product</th><th>Price</th><th>Image</th></tr>'
+    
+    allProducts.forEach((fila) => {
+      table += `
+        <tr>
+          <td>${fila.title}</td>
+          <td>${fila.price}</td>
+          <td><img src="${fila.thumbnail}" alt="${fila.title}" width="64" heigth="48"></td>
+        </tr>`
+     })
+    tabla += '</table>'
+
     logger.info(`Ruta: /api${req.url}, metodo: ${req.method}`)
-    res.send({ message: 'producto modificado'})
-  } else {
-    loggererr.error(`Producto id: ${id} no encontrado`)
-    res.status(404).send({ error: 'producto no encontrado'})
+    res.send(table)
+
   }
-})
-
-
-productRouter.delete('/productos/:id', async (req, res) => {
-  const id = req.params.id
-  if (await products.deleteById(id)) {
-    logger.info(`Ruta: /api${req.url}, metodo: ${req.method}`)
-    res.send({ message: 'producto borrado'})
-  } else {
-    loggererr.error(`Producto id: ${id} no encontrado`) 
-    res.status(404).send({ error: 'producto no encontrado'})
-  }
-})
-
-
-productRouter.get('/productos-test', async (req, res) => {
-  const allProducts = await mock5.getAll()
-
-  let tabla = '<table>'
-  tabla += '<tr><th>Product</th><th>Price</th><th>Image</th></tr>'
-  allProducts.forEach((fila) => {
-    tabla += `<tr>
-                <td>${fila.title}</td>
-                <td>${fila.price}</td>
-                <td><img src="${fila.thumbnail}" alt="${fila.title}" width="64" heigth="48"></td>
-              </tr>`
-  })
-  tabla += '</table>'
-
-  res.send(tabla)
-
-})
+)
 
 
 module.exports = productRouter
