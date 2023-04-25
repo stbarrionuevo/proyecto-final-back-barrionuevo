@@ -1,4 +1,4 @@
-const connectToDb = require('../config/connectToMongo')
+const connectToDB = require('../config/connectToDB')
 const { chatModel } = require('../model/mongoDBModel')
 const { normalizedData } = require('../normalize/normal')
 
@@ -9,7 +9,7 @@ class DAO {
 
   async getAll() {
     try{
-      await connectToDb()
+      await connectToDB()
       const chatInDb = await chatModel.findOne ( { chatid: 'chat1'} )
       return normalizedData(chatInDb.chat)
     
@@ -21,7 +21,7 @@ class DAO {
 
   async add( message ) {
     try{
-      await connectToDb()
+      await connectToDB()
       const chatInDb = await chatModel.findOne ( { chatid: 'chat1' } )
       const newMsj = chatInDb.chat
       newMsj.push({

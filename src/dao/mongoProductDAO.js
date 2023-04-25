@@ -1,4 +1,4 @@
-const connectToDb = require('../config/connectToMongo')
+const connectToDB = require('../config/connectToDB')
 const { productModel } = require('../model/mongoDBModel')
 
 
@@ -7,7 +7,7 @@ class MongoProductDAO {
   
   async getAll() {
     try{
-      await connectToDb()
+      await connectToDB()
       const documentsInDb = await productModel.find()
       return documentsInDb
     } catch(err) {
@@ -18,7 +18,7 @@ class MongoProductDAO {
 
   async getById( id ) {
     try {
-      await connectToDb()
+      await connectToDB()
     
       const documentInDb = await productModel.find({_id: id})
       return documentInDb ? documentInDb : null
@@ -31,7 +31,7 @@ class MongoProductDAO {
 
   async deleteById( id ) {  
     try {
-      await connectToDb()
+      await connectToDB()
      
       await productModel.deleteOne({ _id: id })
       return 
@@ -44,7 +44,7 @@ class MongoProductDAO {
 
   async deleteAll() {
     try {
-      await connectToDb()
+      await connectToDB()
       await productModel.deleteMany()
       return 
     } catch(err) {
@@ -56,7 +56,7 @@ class MongoProductDAO {
 
   async add( item ) {
     try{
-      await connectToDb()
+      await connectToDB()
       const newProduct = new productModel( item )
       await newProduct.save()
         .then(product => console.log(`${product._id}`))

@@ -1,4 +1,4 @@
-const connectToDb = require('../config/connectToMongo')
+const connectToDB = require('../config/connectToDB')
 const { userModel } = require('../model/mongoDBModel')
 
 
@@ -29,11 +29,11 @@ class MongoUserDAO {
   
   async addUser( email, password ) {
     try{
-      await connectToDb()
+      await connectToDB()
       const documentInDb = await userModel.find({ email: email })
       if ( documentInDb.length === 0 ) {
         const encriptedPassword = bcrypt.hashSync(password, saltRounds)
-        await connectToDb()
+        await connectToDB()
         const newUser = new userModel({ email: email, password: encriptedPassword })
         await newUser.save()
           .then(user => console.log(`${user._id}`))
