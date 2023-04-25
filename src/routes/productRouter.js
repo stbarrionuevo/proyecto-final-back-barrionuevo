@@ -80,7 +80,7 @@ productRouter.delete(
 
 
 productRouter.get(
-  '/products-test',
+  '/producos-test',
   async (req, res) => {
     const allProducts = await mock5.getAll()
     let table = '<table>'

@@ -1,7 +1,7 @@
 const connectToDb = require('../config/connectToMongo')
 const { chatModel } = require('../model/mongoDBModel')
 const { normalizedData } = require('../normalize/normal')
-const MemoryChatDao = require('./memoryChatDao')
+
 
 
 class DAO { 

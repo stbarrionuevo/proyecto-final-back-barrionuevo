@@ -1,4 +1,4 @@
-const { getAllChatsDto, addChatMsgDto } = require('../DTO/chatDto')
+const { getAllChatsDto, addChatMsgDto } = require('../dto/chatDTO')
 
 
 const getAllChatsController = async() => {

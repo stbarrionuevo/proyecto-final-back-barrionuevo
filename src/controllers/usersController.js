@@ -1,4 +1,4 @@
-const { checkUserDto, addUserDto } = require('../DTO/userDto')
+const { checkUserDto, addUserDto } = require('../dto/userDTO')
 
 
 const validateEmail = ( email ) => {

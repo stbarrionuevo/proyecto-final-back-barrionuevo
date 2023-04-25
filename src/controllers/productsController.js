@@ -1,7 +1,7 @@
-const { getAllProductsDto, getProductByIdDto, delProductByIdDto, addNewProductDto } = require('../DTO/productDto')
+const { getAllProductsDto, getProductByIdDto, delProductByIdDto, addNewProductDto } = require('../dto/productDTO')
 
 
-const validateObject = ( objeto ) => { // retorna true si hay algun campo vacio
+const validateObject = ( objeto ) => { 
   return Object.values(objeto).includes('')
 }
 
