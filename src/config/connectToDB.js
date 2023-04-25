@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 let isConected
 
-const connectToDd = async () => {
+const connectToDB = async () => {
   if(!isConected) {
     mongoose.set('strictQuery', true);
     await mongoose.connect('mongodb://127.0.0.1:27017/ecommerce',
@@ -18,4 +18,4 @@ const connectToDd = async () => {
   return
 }
 
-module.exports = connectToDd 
+module.exports = connectToDB 
