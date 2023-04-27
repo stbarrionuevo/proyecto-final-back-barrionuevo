@@ -11,7 +11,6 @@ const staticFiles = process.env.STATICFILES
 const persistence = process.env.PERSISTENCE
 
 
-module.exports = { config, staticFiles }
 
 
 module.exports = { config, staticFiles, persistence }

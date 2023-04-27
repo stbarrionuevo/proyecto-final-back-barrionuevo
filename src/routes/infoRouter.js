@@ -4,7 +4,7 @@ const { Router } = express
 const infoRouter = Router()
 const {infoTable} = require('../controllers/infoTable')
 
-const { logger, loggererr } = require('../log/logger')
+const { logger} = require('../log/logger')
 
 infoRouter.get('/', async (req, res) => {
   const table = infoTable()

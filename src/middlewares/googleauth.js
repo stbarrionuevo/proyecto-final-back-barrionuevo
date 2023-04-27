@@ -5,4 +5,4 @@ connectToFirebase()
 
 const decodedToken = (token) => getAuth().verifyIdToken(token)
 
-module.exports = decodedToken
+module.exports = {decodedToken}

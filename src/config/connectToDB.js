@@ -18,4 +18,4 @@ const connectToDB = async () => {
   return
 }
 
-module.exports = connectToDB 
+module.exports = {connectToDB}

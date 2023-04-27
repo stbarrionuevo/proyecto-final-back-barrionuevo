@@ -1,13 +1,13 @@
 const express = require('express')
 const expressSession = require('express-session')
 
-const { logger, loggererr } = require('../log/logger')
+const { logger, loggererr } = require('./log/logger')
 const MongoStore = require('connect-mongo')
 const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true }
 
 const { Server: HttpServer } = require('http')
 const { Server: Socket } = require('socket.io')
-const { config, staticFiles } = require('../config/environment')
+const { config, staticFiles } = require('./config/environment')
 
 
 const cluster = require('cluster')
@@ -36,7 +36,7 @@ const { getAllChatsController, addChatMsgController } = require('./controllers/c
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(express.static('../public'))
+app.use(express.static(staticFiles))
 app.use(expressSession({
   store: MongoStore.create({
     mongoUrl: 'mongodb://127.0.0.1:27017/ecommerce',
@@ -81,6 +81,12 @@ app.use('/api', productRouter)
 app.use('/info', infoRouter)
 
 
+app.get('*', (req, res) => {
+  logger.warn(`Ruta: ${req.url}, metodo: ${req.method} no implemantada`)
+  res.send(`Ruta: ${req.url}, metodo: ${req.method} no implemantada`)
+})
+
+
 
 let PORT = ( config.port) ? config.port : 8080 
 
@@ -88,11 +94,11 @@ let PORT = ( config.port) ? config.port : 8080
     PORT = config.same === 1 ? PORT + cluster.worker.id - 1 : PORT
   } 
 
-const server = httpServer.listen(PORT, () => {
-    console.log(`-------------- SERVER READY LISTENING IN PORT ${PORT} --------------`)
-})
-server.on('error', error => console.log(`ERROR IN SERVER ${error}`))
 
+const server = httpServer.listen(PORT, () => {
+  console.log(`-------------- SERVER READY LISTENING IN PORT ${PORT} --------------`)
+})
+server.on('error', error => loggererr.error(`ERROR IN SERVER ${error}`))
 
 
 if ( config.mode != 'CLUSTER' ) { 

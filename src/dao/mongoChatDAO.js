@@ -4,7 +4,7 @@ const { normalizedData } = require('../normalize/normal')
 
 
 
-class DAO { 
+class MongoChatDAO { 
 
 
   async getAll() {
@@ -50,4 +50,4 @@ class DAO {
 }
 
 
-module.exports = DAO
+module.exports = MongoChatDAO

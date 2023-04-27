@@ -32,4 +32,4 @@ const getDAO = async() => {
 }
 
 
-module.exports = getDAO
+module.exports = { getDAO }
