@@ -4,8 +4,8 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "0x src/server.js"
+    "test": "npx mocha",
+    "start": "nodemon ."
   },
   "keywords": [],
   "author": "Santiago Barrionuevo",
@@ -39,6 +39,10 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "^7.6.0"
+    "@faker-js/faker": "^7.6.0",
+    "axios": "^1.4.0",
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "supertest": "^6.3.3"
   }
 }

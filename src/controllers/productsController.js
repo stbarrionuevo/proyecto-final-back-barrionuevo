@@ -1,4 +1,4 @@
-const { getAllProductsDto, getProductByIdDto, delProductByIdDto, addNewProductDto } = require('../dto/productDTO')
+const { getAllProductsDto, getProductByIdDto, delProductByIdDto, addNewProductDto , modifyProductByIdDto} = require('../dto/productDTO')
 
 
 const validateObject = ( objeto ) => { 
@@ -36,4 +36,10 @@ const delProductByIdController = async( id ) => {
 }
 
 
-module.exports = { newProductController, getAllProductsController, getProductByIdController, delProductByIdController }
+const modifyProductByIdController = async( id, item ) => {
+  const response = await modifyProductByIdDto( id, item )
+  return response
+}
+
+
+module.exports = { newProductController, getAllProductsController, getProductByIdController, delProductByIdController, modifyProductByIdController}

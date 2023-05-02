@@ -32,5 +32,12 @@ const addNewProductDto = async( item ) => {
   return 
 }
 
+const modifyProductByIdDto = async( id, item ) => {
+  const products = await (await getDao()).products
+  const response = await products.modifyById( id, item )
+  return response
+}
 
-module.exports = { getAllProductsDto, getProductByIdDto, delProductByIdDto, delAllProductsDto, addNewProductDto }
+
+
+module.exports = { getAllProductsDto, getProductByIdDto, delProductByIdDto, delAllProductsDto, addNewProductDto, modifyProductByIdDto }

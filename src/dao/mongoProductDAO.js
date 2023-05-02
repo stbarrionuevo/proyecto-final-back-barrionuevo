@@ -67,6 +67,27 @@ class MongoProductDAO {
     }
   }
 
+  
+  async modifyById( id, item ) {  
+    try {
+      await connectToDb()
+      const result = await productModel.findByIdAndUpdate(id, item)
+      if (result !== null){
+        console.log(`Se ha actualizado el elemento con id: ${id}`)
+        return true
+      } else {
+        console.log(`No se ha encontrado ningún elemento con id: ${id}`)
+        return false
+      }
+    } catch(err) {
+      console.log(`Error: ${err}`)
+      return false
+    }
+  }
+
 }
+
+
+
 
 module.exports = MongoProductDAO

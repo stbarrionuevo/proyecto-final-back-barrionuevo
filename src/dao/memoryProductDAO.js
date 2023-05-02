@@ -36,6 +36,25 @@ class MemoryProductDAO {
     return
   }
 
+  modifyById( id, item ) {
+    const index = this.productList.findIndex( ele => ele.id === id )
+    if ( index >= 0 ) {
+      console.log('item nuevo', item)
+      console.log('item viejo', this.productList[index])
+      this.productList[index].title = item.title
+      this.productList[index].description = item.description
+      this.productList[index].code = item.code
+      this.productList[index].price = item.price
+      this.productList[index].stock = item.stock
+      this.productList[index].thumbnail = item.thumbnail
+      console.log(`Se ha actualizado el elemento con id: ${id}`)
+      return true
+    } else {
+      console.log(`No se ha encontrado ningún elemento con id: ${id}`)
+      return false
+    }
+  }
+
 }
 
 

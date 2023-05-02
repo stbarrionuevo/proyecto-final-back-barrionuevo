@@ -1,0 +1,17 @@
+//PRODUCTS CONTROLLER
+
+getAllProductsController
+-Retorna todos los productos que se hayan 
+-Caso contrario, retorna arr vacio en caso de no haber productos 
+
+getProductByIdController
+-Devuelve el producto del id seleccionado
+- Retorna valor NULL si el pedido es de un ID que no existe o no está disponible
+
+delProductByIdController
+-Elimina el producto del ID seleccionado
+-Retorna valor FALSE si se intenta eliminar un producto cuyo ID que no existe
+
+newProductController
+-Devuelve TRUE si se agrega exitosamente un producto nuevo, es almacenado
+-Devuelve FALSE si los datos del productos nuevo no son correctos o están incompletos, NO es almacenado

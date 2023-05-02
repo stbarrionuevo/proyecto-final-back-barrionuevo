@@ -4,7 +4,7 @@ const productRouter = Router()
 const { newProductController, getAllProductsController, getProductByIdController, delProductByIdController } = require('../controllers/productsController')
 const { mock5 } = require('../dao/mockFaker')
 const { logger, loggererr } = require('../log/logger')
-
+const { addProducts } = require('../test/auxfunction')
 
 
 productRouter.get(
@@ -99,6 +99,13 @@ productRouter.get(
     logger.info(`Ruta: /api${req.url}, metodo: ${req.method}`)
     res.send(table)
 
+  }
+)
+productRouter.post(
+  '/productos-test-add/:number',
+  async (req, res) => {
+    addProducts(req.params.number)
+    res.send({ message: 'productos agregados'})
   }
 )
 
