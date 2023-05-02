@@ -1,7 +1,7 @@
-//PRODUCTS CONTROLLER
+//PRODUCTS CONTROLLER TEST
 
 getAllProductsController
--Retorna todos los productos que se hayan 
+-Retorna todos los productos que hayan 
 -Caso contrario, retorna arr vacio en caso de no haber productos 
 
 getProductByIdController

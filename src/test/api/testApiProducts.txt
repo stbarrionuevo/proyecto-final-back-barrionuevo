@@ -1,0 +1,17 @@
+//API PPRODUCTS TEST
+
+GET /producos
+-Retorna todos los productos que hayan 
+-Caso contrario, retorna arr vacio en caso de no haber productos
+
+GET /productos/:id
+-Devuelve el producto del ID seleccionado
+-Retorna msg de producto no encontrado por ID incorrecto
+
+DELETE /producos/:id
+-Elimina el producto del ID seleccionado
+- Retorna msg de producto no encontrado si se intenta borrar un producto que no existe
+
+POST /productos/nuevo
+-Retorna msg de producto guardado si se ha almacenado exitosamente
+-No se agrega producto si los datos del nuevo producto no son correctos
