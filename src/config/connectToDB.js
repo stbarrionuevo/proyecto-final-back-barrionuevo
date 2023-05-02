@@ -5,7 +5,7 @@ let isConected
 const connectToDB = async () => {
   if(!isConected) {
     mongoose.set('strictQuery', true);
-    await mongoose.connect('mongodb://127.0.0.1:27017/ecommerce',
+    await mongoose.connect(process.env.MONGOURL,
     { useNewUrlParser: true, useUnifiedTopology: true })
         .then(() => {
           isConected = true
