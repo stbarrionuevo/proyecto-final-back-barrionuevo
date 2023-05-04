@@ -39,7 +39,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.static(staticFiles))
 app.use(expressSession({
   store: MongoStore.create({
-    mongoUrl: 'mongodb://127.0.0.1:27017/ecommerce',
+    mongoUrl: process.env.MONGOSESSION,
     mongoOptions: advancedOptions
   }),
   secret: 'secret-pin',
