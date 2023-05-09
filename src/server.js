@@ -5,6 +5,11 @@ const { logger, loggererr } = require('./log/logger')
 const MongoStore = require('connect-mongo')
 const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true }
 
+
+const { ApolloServer } = require('@apollo/server')
+const { typeDefs } = require('../graphql/typeDefs')
+const { resolvers } = require('../graphql/resolvers')
+
 const { Server: HttpServer } = require('http')
 const { Server: Socket } = require('socket.io')
 const { config, staticFiles } = require('./config/environment')
@@ -50,7 +55,10 @@ app.use(expressSession({
   }
 }))
 
-
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+})
 
 io.on('connection', async socket => {
   console.log('New connection!')
@@ -95,10 +103,23 @@ let PORT = ( config.port) ? config.port : 8080
   } 
 
 
-const server = httpServer.listen(PORT, () => {
-  console.log(`-------------- SERVER READY LISTENING IN PORT ${PORT} --------------`)
-})
-server.on('error', error => loggererr.error(`ERROR IN SERVER ${error}`))
+
+  server.start()
+  .then(() => {
+    app.use('/graphql',
+      expressMiddleware(server,
+      { context: () => ({ isUserAuthorized: 'OK' })} )
+    )
+    app.get('*', (req, res) => {
+      logger.warn(`Ruta: ${req.url}, metodo: ${req.method} no implemantada`)
+      res.send(`Ruta: ${req.url}, metodo: ${req.method} no implemantada`)
+    })
+    
+    app.listen(PORT, () => console.log(`-------------- SERVER READY LISTENING IN PORT ${PORT} --------------`))
+  })
+
+  
+
 
 
 if ( config.mode != 'CLUSTER' ) { 
@@ -119,4 +140,4 @@ if ( config.mode != 'CLUSTER' ) {
       baseProcces()
     }
   }
-
+  
