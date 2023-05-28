@@ -14,7 +14,7 @@ const connectToDB = async () => {
     return
   }
 
-  console.log("Conexion existente")
+  console.log("Established Connection!!!")
   return
 }
 

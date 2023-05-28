@@ -1,14 +1,14 @@
 const { getAllChatsDto, addChatMsgDto } = require('../dto/chatDTO')
 
 
-const getAllChatsController = async() => {
-  const allChats = await getAllChatsDto()
+const getAllChatsController = async( username) => {
+  const allChats = await getAllChatsDto(username)
   return allChats
 }
 
 
-const addChatMsgController = async ( message ) => {
-  addChatMsgDto( message )
+const addChatMsgController = async ( username, type, body ) => {
+  addChatMsgDto( username, type , body )
   return 
 }
 
