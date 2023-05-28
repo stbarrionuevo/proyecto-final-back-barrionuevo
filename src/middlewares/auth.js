@@ -1,11 +1,11 @@
 const passport = require('passport')
 const { Strategy } = require('passport-local')
 const LocalStrategy = require('passport-local').Strategy
-
+const jwt = require('jsonwebtoken')
 const decodedToken = require('./googleauth')
 const { logger } = require('../log/logger')
 
-const { checkUserController, newUserController } = require('../controllers/usersController')
+const { checkUserController, getUserController, newUserController } = require('../controllers/usersController')
 
 
 passport.use(
@@ -16,7 +16,7 @@ passport.use(
       if ( validateUser.result ) {     
         return done( null, { username: username } )
       } else {
-        logger.info(`Usuario o contrasena incorrectos.`)
+        logger.info(`Error entering username or password.`)
         return done( null, false )
       }
     }
@@ -51,12 +51,31 @@ passport.use(
       if ( await newUserController (username, password ) ) {
         return done( null, { username: username } )
       } else {
-        logger.info(`No se ha podido registrar Usuario.`)
+        logger.info(`Failed to register User.`)
         return done( null, false )
       }
     }
   )
 )
+
+passport.use(
+  'jwt',
+  new JwtStrategy(
+    {
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: jwtsecretkey, 
+    },
+    async (payload, done) => {
+      try {
+        const user = await getUserController( payload.username )
+        return done(null, user !== null ? user : false)
+      } catch (error) {
+        return done(error, false)
+      }
+    }
+  )
+)
+
 
 
 passport.serializeUser( function(user, done) {
@@ -66,3 +85,16 @@ passport.serializeUser( function(user, done) {
 passport.deserializeUser( function(username, done) {
   done(null, { username: username })
 })
+
+
+module.exports = {passport}
+
+module.exports.generateJwtToken = ( username ) =>{
+  const payload = {
+    username: username
+  }
+  const options = {
+    expiresIn: jwtexpires 
+  }
+  return jwt.sign(payload, jwtsecretkey, options)
+}
