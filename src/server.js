@@ -1,143 +1,161 @@
-const express = require('express')
-const expressSession = require('express-session')
-
-const { logger, loggererr } = require('./log/logger')
-const MongoStore = require('connect-mongo')
-const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true }
-
-
-const { ApolloServer } = require('@apollo/server')
-const { typeDefs } = require('../graphql/typeDefs')
-const { resolvers } = require('../graphql/resolvers')
-
-const { Server: HttpServer } = require('http')
-const { Server: Socket } = require('socket.io')
 const { config, staticFiles } = require('./config/environment')
+const { logger, loggererr } = require('./log/logger')
 
 
+const express = require('express')
 const cluster = require('cluster')
 const numCPUs = require('os').cpus().length
-const baseProcces = () => {
+const http = require('http')
+const { Server: Socket } = require('socket.io')
+const io = new Socket(httpServer)
 
-  cluster.on('exit', (worker, code, signal) => {
-    console.log(`Proceso ${worker.process.pid} caido!`)
-    cluster.fork()
-  })}
+const mongoStore = require('connect-mongo')
+const expressSession = require('express-session')
+const advancedOptions = {useNewUrlParser: true,useUnifiedTopology: true}
+const { engine } = require('express-handlebars')
 
+const path = require ("path")
 
-
+//rOUTERS
 const productRouter = require('./routes/productRouter')
+const cartRouter = require('./routes/cartRouter')
+const chatRouter = require('./routes/chatRouter.js')
 const sessionRouter = require('./routes/sessionRouter')
 const infoRouter = require('./routes/infoRouter')
 
-const app = express()
-const httpServer = new HttpServer(app)
-const io = new Socket(httpServer)
 
 
-const { newProductController, getAllProductsController } = require('./controllers/productsController')
-const { getAllChatsController, addChatMsgController } = require('./controllers/chatsController')
+// Function server
 
+const startServer = () => {
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(express.static(staticFiles))
-app.use(expressSession({
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGOSESSION,
-    mongoOptions: advancedOptions
-  }),
-  secret: 'secret-pin',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    maxAge: 60000
-  }
-}))
+  const app = express()
+  const server = http.createServer(app)
+ 
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-})
-
-io.on('connection', async socket => {
-  console.log('New connection!')
-
-
-  socket.emit('productos', await getAllProductsController())
-
-  socket.on('update', async producto => {
-    await newProductController( producto )
-    io.sockets.emit('productos', await getAllProductsController())
-  })
-
-  socket.emit('mensajes', await getAllChatsController())
-
-
-  socket.on('newMsj', async mensaje => {
-      mensaje.date = new Date().toLocaleString()
-      await addChatMsgController( mensaje )
-      
-      io.sockets.emit('mensajes', await getAllChatsController())
-  })
-
-})
-
-
-app.use('/session', sessionRouter)
-app.use('/api', productRouter)
-app.use('/info', infoRouter)
-
-
-app.get('*', (req, res) => {
-  logger.warn(`Ruta: ${req.url}, metodo: ${req.method} no implemantada`)
-  res.send(`Ruta: ${req.url}, metodo: ${req.method} no implemantada`)
-})
-
-
-
-let PORT = ( config.port) ? config.port : 8080 
-
-  if ( config.mode === 'CLUSTER') { 
-    PORT = config.same === 1 ? PORT + cluster.worker.id - 1 : PORT
+  app.set('views', path.resolve(__dirname, '../views'))
+  app.engine('hbs', engine({ extname: 'hbs' }))
+  app.set('view engine', 'hbs')
+   
+  //---------------------- MIDDLEWARES
+  app.use(express.json())
+  app.use(express.urlencoded({ extended: true }))
+  app.use(express.static(staticFiles))
+  try {
+    app.use(expressSession({
+      store: mongoStore.create({
+        mongoUrl: mongocredentialsession,
+        mongoOptions: advancedOptions
+      }),
+      secret: 'secret-pin',
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        maxAge: Number(usersessiontime)
+      }
+    }))
+  } catch (error) {
+    logger.error(`Error en la conexion a la base de datos: ${error}`)  
   } 
 
-
-
-  server.start()
-  .then(() => {
-    app.use('/graphql',
-      expressMiddleware(server,
-      { context: () => ({ isUserAuthorized: 'OK' })} )
-    )
-    app.get('*', (req, res) => {
-      logger.warn(`Ruta: ${req.url}, metodo: ${req.method} no implemantada`)
-      res.send(`Ruta: ${req.url}, metodo: ${req.method} no implemantada`)
+  //SOCKET
+  io.on('connection', async socket => {
+    console.log('New connection!')
+  
+  
+    socket.emit('productos', await getAllProductsController())
+  
+    socket.on('update', async producto => {
+      await newProductController( producto )
+      io.sockets.emit('productos', await getAllProductsController())
     })
-    
-    app.listen(PORT, () => console.log(`-------------- SERVER READY LISTENING IN PORT ${PORT} --------------`))
+  
+    socket.emit('mensajes', await getAllChatsController())
+  
+  
+    socket.on('newMsj', async mensaje => {
+        mensaje.date = new Date().toLocaleString()
+        await addChatMsgController( mensaje )
+        
+        io.sockets.emit('mensajes', await getAllChatsController())
+    })
+  
   })
 
-  
+  //USE ROUTES
+
+  app.use('/session', sessionRouter)
+
+
+  app.use('/api', productRouter)
+
+
+  app.use('/api', cartRouter)
+
+
+  app.use('/api', chatRouter)
+
+  app.use('/info', infoRouter)
 
 
 
-if ( config.mode != 'CLUSTER' ) { 
+  //Routes NO implementadas
 
- 
-  console.log('Server FORK')
-  baseProcces()
-  } else { 
-
- 
-    if (cluster.isPrimary) {
-      console.log('SERVER CLUSTER')
-   
-      for (let i = 0; i < numCPUs; i++) { 
-        cluster.fork()
-      }
+  app.get('*', (req, res, next) => {
+    const fileExtension = path.extname(req.url)
+    if (fileExtension === '.ico') {
+      next()
     } else {
-      baseProcces()
+      logger.warn(`Ruta: ${req.url}, método: ${req.method} no implementada`)
+      res.send(`Ruta: ${req.url}, método: ${req.method} no implementada`)
+    }
+  })
+
+  return { server }
+}
+
+
+
+//CLUSTER / FORK
+
+const startCluster = () => {
+  if (cluster.isPrimary) {
+    logger.info('Server in CLUSTER mode')
+    logger.info('----------------------')
+    for (let i = 0; i < numCPUs; i++) {
+      cluster.fork()
+    }
+  } else {
+    logger.info(`Worker ${cluster.worker.id} started`)
+    PORT = config.same === 1 ? PORT + cluster.worker.id - 1 : PORT
+    try {
+      startServer().server.listen(PORT, () => {
+        logger.info(`Worker ${cluster.worker.id} listening on port ${PORT}`)
+      })
+    } catch (error) {
+      logger.error(`Error starting worker ${cluster.worker.id}: ${error}`)
     }
   }
-  
+}
+
+const startFork = () => {
+  logger.info('Server in FORK mode')
+  logger.info('-------------------')
+  try {
+    startServer().server.listen(PORT, () => {
+      logger.info(`Server listening on port ${PORT}`)
+    })
+  } catch (error) {
+    logger.error(`Error starting server: ${error}`)
+  }
+}
+
+
+
+let PORT = ( config.port ) ? config.port : 8080 
+
+if (config.mode === 'CLUSTER') {
+  startCluster()
+} else {
+  startFork()
+}
