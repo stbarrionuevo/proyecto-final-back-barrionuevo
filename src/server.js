@@ -1,7 +1,5 @@
 const { config, staticFiles } = require('./config/environment')
 const { logger, loggererr } = require('./log/logger')
-
-
 const express = require('express')
 const cluster = require('cluster')
 const numCPUs = require('os').cpus().length
@@ -37,7 +35,7 @@ const startServer = () => {
   app.engine('hbs', engine({ extname: 'hbs' }))
   app.set('view engine', 'hbs')
    
-  //---------------------- MIDDLEWARES
+  //MIDDLEWARES
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
   app.use(express.static(staticFiles))
@@ -55,7 +53,8 @@ const startServer = () => {
       }
     }))
   } catch (error) {
-    logger.error(`Error en la conexion a la base de datos: ${error}`)  
+    logger.error(`
+    Database connection error: ${error}`)  
   } 
 
   //SOCKET
@@ -106,8 +105,8 @@ const startServer = () => {
     if (fileExtension === '.ico') {
       next()
     } else {
-      logger.warn(`Ruta: ${req.url}, método: ${req.method} no implementada`)
-      res.send(`Ruta: ${req.url}, método: ${req.method} no implementada`)
+      logger.warn(`Route: ${req.url}, method: ${req.method} not implemented`)
+      res.send(`Route: ${req.url}, method: ${req.method} not implemented`)
     }
   })
 
@@ -120,33 +119,31 @@ const startServer = () => {
 
 const startCluster = () => {
   if (cluster.isPrimary) {
-    logger.info('Server in CLUSTER mode')
-    logger.info('----------------------')
+    logger.info('SERVER CLUSTER MODE')
     for (let i = 0; i < numCPUs; i++) {
       cluster.fork()
     }
   } else {
-    logger.info(`Worker ${cluster.worker.id} started`)
+    logger.info(`CLUSTER STARTS ${cluster.worker.id}`)
     PORT = config.same === 1 ? PORT + cluster.worker.id - 1 : PORT
     try {
       startServer().server.listen(PORT, () => {
-        logger.info(`Worker ${cluster.worker.id} listening on port ${PORT}`)
+        logger.info(`-----------CLUSTER ${cluster.worker.id} IN PORT: ${PORT}-----------`)
       })
     } catch (error) {
-      logger.error(`Error starting worker ${cluster.worker.id}: ${error}`)
+      logger.error(`ERROR ATTEMPTING TO START SERVER ${cluster.worker.id}: ${error}`)
     }
   }
 }
 
 const startFork = () => {
-  logger.info('Server in FORK mode')
-  logger.info('-------------------')
+  logger.info('SERVER FORK MODE')
   try {
     startServer().server.listen(PORT, () => {
-      logger.info(`Server listening on port ${PORT}`)
+      logger.info(`-----------SERVER FORK LISTEN IN PORT: ${PORT}--------------`)
     })
   } catch (error) {
-    logger.error(`Error starting server: ${error}`)
+    logger.error(`ERROR ATTEMPTING TO START SERVER: ${error}`)
   }
 }
 

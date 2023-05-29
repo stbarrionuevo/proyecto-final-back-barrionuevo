@@ -2,7 +2,7 @@ const express = require('express')
 
 const { Router } = express   
 const infoRouter = Router()
-const {infoTable} = require('../controllers/infoTable')
+
 const { config , MONGOSESSION} = require('../config/environment')
 
 
