@@ -3,14 +3,21 @@ const express = require('express')
 const { Router } = express   
 const infoRouter = Router()
 const {infoTable} = require('../controllers/infoTable')
+const { config , MONGOSESSION} = require('../config/environment')
 
-const { logger} = require('../log/logger')
 
+
+const PORT = ( config.port ) ? config.port : 8080
 infoRouter.get('/', async (req, res) => {
-  const table = infoTable()
-  logger.info(`Ruta: /info, metodo: ${req.method}`)
-  console.log(table)
-  res.send(table)
+  res.render('info', {
+    port: PORT,
+    url: MONGOSESSION.split('@')[1].split('?')[0],
+
+    })
+})
+
+infoRouter.get('/:error', (req, res) => {
+  res.render('error', { error: req.params.error })
 })
 
 

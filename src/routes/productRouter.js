@@ -1,10 +1,9 @@
 const { Router } = require('express')  
 const productRouter = Router() 
-
-const { newProductController, getAllProductsController, getProductByIdController, delProductByIdController } = require('../controllers/productsController')
+const { newProductController, getAllProductsController, getProductByIdController, getProductsByCategoryController , delProductByIdController } = require('../controllers/productsController')
 const { mock5 } = require('../dao/mockFaker')
 const { logger, loggererr } = require('../log/logger')
-const { addProducts } = require('../test/auxfunction')
+
 
 
 productRouter.get(
@@ -25,8 +24,25 @@ productRouter.get(
       logger.info(`Ruta: /api${req.url}, metodo: ${req.method}`)
       res.json( product )
     } else {
-      loggererr.error(`Producto id: ${id} not found`) 
-      res.status(404).send({ error: 'product not found'})
+      loggererr.error(`Product id: ${id} NOT found`) 
+      res.status(404).send({ error: 'Product NOT found'})
+    }
+  }
+)
+
+productRouter.get(
+  '/productos/categoria/:category',
+  async (req, res) => {
+    try {
+      const products = await getProductsByCategoryController(req.params.category)
+      if (products) {
+        res.json( products )
+      } else {
+        logger.warn(`CATEGORY: ${req.params.categoria} NOT FOUND`)
+        res.status(404).json({ error: 'Products NOT found' })
+      }
+    } catch (error) {
+      loggererr.error(`Error in route ${req.url}, method ${req.method}: ${error}`)
     }
   }
 )
@@ -65,49 +81,25 @@ productRouter.put(
 
 productRouter.delete(
   '/productos/:id',
+  passport.authenticate('jwt', { session: false }),
   async (req, res) => {
-    const id = req.params.id
-    if (await delProductByIdController(id)) {
-      logger.info(`Ruta: /api${req.url}, metodo: ${req.method}`)
-      res.send({ message: 'product delete'})
-    } else {
-      loggererr.error(`Product id: ${id} not found`) 
-      res.status(404).send({ error: 'product not found'})
+    try {
+      const id = req.params.id
+      const response = await delProductByIdController(id)
+      if (response) {
+        logger.info(`Product successfully deleted`)
+        res.status(200).json({ message: 'DELETED' })
+      } else {
+        logger.warn(`Product id: ${id} not found`)
+        res.status(404).json({ error: 'Product NOT found' })
+      }
+    } catch (error) {
+      loggererr.error(`Error in route ${req.url}, method ${req.method}: ${error}`)
+      res.redirect(`/error/Error ${error}`)
     }
   }
 ) 
 
-
-
-productRouter.get(
-  '/producos-test',
-  async (req, res) => {
-    const allProducts = await mock5.getAll()
-    let table = '<table>'
-    table += '<tr><th>Product</th><th>Price</th><th>Image</th></tr>'
-    
-    allProducts.forEach((fila) => {
-      table += `
-        <tr>
-          <td>${fila.title}</td>
-          <td>${fila.price}</td>
-          <td><img src="${fila.thumbnail}" alt="${fila.title}" width="64" heigth="48"></td>
-        </tr>`
-     })
-    tabla += '</table>'
-
-    logger.info(`Ruta: /api${req.url}, metodo: ${req.method}`)
-    res.send(table)
-
-  }
-)
-productRouter.post(
-  '/productos-test-add/:number',
-  async (req, res) => {
-    addProducts(req.params.number)
-    res.send({ message: 'productos agregados'})
-  }
-)
 
 
 module.exports = productRouter

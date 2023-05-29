@@ -1,68 +1,106 @@
 const express = require('express')
-const passport = require('passport')
-require('../middlewares/auth')
-
-const { Router } = express   
+const { Router } = require('express')
 const sessionRouter = Router() 
+const passport = require('../middlewares/auth')
+const { generateJwtToken } = require('../middlewares/auth')
 const { logger, loggererr } = require('../log/logger')
+const { addUserController, getUserController } = require('../controllers/usersController')
 
 
 
-sessionRouter.get('/', (req, res) => {
-  if (req.session.passport) {
-    console.log (req.session)
-    logger.info(`Usuario ${req.session.passport.user} logeado`)
-    res.status(200).send({ user: req.session.passport.user })
-  } else {
-    logger.warn(`No hay usuario logeado`) 
-    res.status(401).send({ user: '' })
+sessionRouter.get('/',
+  async (req, res) => {
+    if (req.session.passport) {
+      let userData = await getUserController( req.session.passport.user )
+      if (userData) {
+        logger.info(`User ${req.session.passport.user} logged in`)
+        userData = Object.assign({}, userData._doc, { token: generateJwtToken(req.session.passport.user) })
+        res.status(200).send(userData)
+      } else {
+        logger.warn(`User not found ${req.session.passport.user}`) 
+        res.status(401).send(null)
+      }
+    } else {
+      logger.info(`
+      No user logged in`) 
+      res.status(401).send(null)
+    }
   }
-})
+)
 
 
-
+//POST login
 sessionRouter.post(
   '/login', 
   passport.authenticate('login'),
-  function(req, res) {
-    logger.info(`Autenticacion exitosa`)
-    res.status(200).send({ message: 'Autenticación exitosa.' })
+  async (req, res) => {
+    let userData = await getUserController( req.body.username )
+    if (userData) {
+      logger.info(`User ${req.body.username} logged in`)
+      userData = Object.assign({}, userData._doc, { token: generateJwtToken(req.session.passport.user) })
+      res.status(200).send(userData)
+    } else {
+      logger.warn(`Could not retrieve data for ${req.body.username} from the database`)
+      
+    }
   }
 )
+
+//LOGIN googleauth
 
 sessionRouter.post(
   '/logingoogle', 
   passport.authenticate('googleauth'),
   function(req, res) {
-    logger.info(`Autenticacion con Google exitosa`)
-    res.status(200).send({ message: 'Autenticación exitosa.' })
+    logger.info(`
+    Authentication with Google successful`)
+    res.status(200).send({ message: 'successful authentication.' })
   }
 )
 
 
-
+//POST Register 
 sessionRouter.post(
   '/register',
   passport.authenticate('register'),
-  function(_, res) {
-    logger.info(`Usuario creado correctamente`)
-    res.status(200).send({ rlt: true, msg: 'Usuario creado correctamente'})
+  ( req, res) => {
+    if ( addUserController ({
+      username: req.body.username,
+      password: req.body.password,
+      name: req.body.name,
+      address: req.body.address,
+      phone: req.body.phone,
+      age: req.body.age,
+      photo: req.body.photo
+    })) {
+      logger.info(`User created successfully`)
+      res.status(200).send({ result: true, msg: 'User created successfully'})
+    } else {
+      logger.info(`
+      Failed to create user`)
+      res.status(200).send({ result: false, msg: 'Failed to create user'})
+    }
+  }
+)
+
+//LOGOUT
+sessionRouter.post(
+  '/logout',
+  async (req, res) => {
+    addBlackListJWT( req.headers.authorization)
+    req.session.destroy((err) => {
+      if (err) {
+        loggererr.error(`
+        Could not log out, error: ${err}`)
+      } else {
+        logger.info(`
+        Closed session.`)
+        res.redirect('/')
+      }
+    })
   }
 )
 
 
-
-sessionRouter.post('/logout', async (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      loggererr.error(`No se ha podido cerrar la sesion, error: ${error}`)
-      res.status(500).send(`Something terrible just happened!!!`)
-    } else {
-      logger.info(`Sesion cerrada.`)
-      res.redirect('/')
-    }
-  })
-})
-
-
 module.exports = sessionRouter
+

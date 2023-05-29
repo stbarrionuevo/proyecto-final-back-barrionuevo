@@ -9,8 +9,8 @@ const config = {
 require('dotenv').config()
 const staticFiles = process.env.STATICFILES
 const persistence = process.env.PERSISTENCE
+const MONGOSESSION = process.env.MONGOSESSION
 
 
 
-
-module.exports = { config, staticFiles, persistence }
+module.exports = { config, staticFiles, persistence,MONGOSESSION }
