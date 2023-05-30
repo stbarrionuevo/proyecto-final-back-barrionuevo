@@ -1,7 +1,7 @@
 
 # README.md 
 
-Mi proyecto consiste en el desarrollo de un backend para un ecommerce utilizando los patrones Factory, DAO y DTO.
+Mi proyecto consiste en el desarrollo de un backend para un ecommerce utilizando: Express,Websocket, Nodemailer, MongoDB, Passport JWT y los patrones Factory, DAO y DTO.
 
 # Descripción
 
@@ -40,12 +40,52 @@ Para ejecutar el proyecto, es necesario ejecutar el siguiente comando:
 /productos : dedicado para la gestion de productos
 Cada endpoint acepta los métodos HTTP GET, POST, PUT y DELETE, y devuelve la respuesta del metodo solicitado.
 
-GET -----> /productos  ; /productos/:id  ; /productos-test
+GET -----> /productos  ; /productos/:id  ; /productos/categoria/:category
 
 POST -----> /productos/nuevo
 
+PUT -----> /productos/:id
+
 DELETE -----> /productos/:id 
 ```
+
+```http
+/cart : dedicado para la gestion de productos en el carrito de compras y el carro en sí
+Cada endpoint acepta los métodos HTTP GET, POST y DELETE, y devuelve la respuesta del metodo solicitado.
+
+GET -----> /cart
+
+POST -----> /cart
+
+
+DELETE -----> /cart ; /cart/:id  ELIMINA EL CART COMPLETO / ELIMINA UN OBJETO DETEMINADO POR EL ID DEL CART
+```
+
+```http
+/chat : dedicado para la gestion deL CHAT y de los mensajes
+Cada endpoint acepta los métodos HTTP GET, POST y devuelve la respuesta del metodo solicitado.
+
+GET -----> /chat/:username
+
+POST -----> /chat/:msg
+```
+
+```http
+/ : dedicado para la gestion de Sesiones
+Cada endpoint acepta los métodos HTTP GET, POST y devuelve la respuesta del metodo solicitado.
+
+GET -----> / ; Devuelve el usuario logeado, en caso de no estar logeado o no encontrarlo salta el error con la causa
+
+POST -----> /login ; /logingoogle ; /register ; /logout
+```
+
+
+
+
+#### No es necesario ni recomendado.
+-Crear un administrador de stock, dado que puede escaparse del scope y requerir bastante trabajo extra. Podremos gestionar el stock desde la base MongoDB.
+-Implementar el FrontEnd salvo que así sea deseado por parte del estudiante.
+
 
 
 
