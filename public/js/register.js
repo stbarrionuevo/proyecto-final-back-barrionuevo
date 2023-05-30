@@ -1,47 +1,74 @@
-const logName = document.getElementById('logName')
-const logPassword = document.getElementById('logPassword')
+function registerNewUser(sessionUserHtmlElement) {
+  sessionUserHtmlElement.innerHTML = registerNewUserTemplate()
 
-document.getElementById("registerBtn").addEventListener("click", ev => {
-  if ( validateObject ({ a: logName.value , b: logPassword.value })) {
-    toast('Complete ALL THE FORM before send it', "#f75e25", "#ff4000")
-  } else {
-    if ( validateEmail( logName.value )) {
-      fetch(`http://localhost:8080/session/register/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          username: logName.value,
-          password: logPassword.value
+  const name = document.getElementById('name')
+  const user = document.getElementById('email')
+  const address = document.getElementById('address')
+  const age = document.getElementById('age')
+  const phoneInput = document.querySelector("#phone")
+  const password = document.getElementById('password')
+  const passwordConf = document.getElementById('passwordConf')
+  const registerBtn = document.getElementById('registerBtn')
+  const cancelRegisterBtn = document.getElementById('cancelRegisterBtn')
+
+  registerBtn.addEventListener("click", ev => {
+
+    const phoneNumber = phoneInput.getNumber() 
+    if( !validateObject ({
+          name: name.value,
+          direccion: address.value,
+          edad: age.value,
+          telefono: phoneNumber,
+          contrasena: password.value
         })
-      })
-      .then(response => {
-        if ( response.status === 401 ){
-          toast("USER ALREADY EXISTS", "#f75e25", "#ff4000")
-      
-        } else { 
+        & validateEmail( user.value )
+        & ( password.value === passwordConf.value )
+        ){
 
-          fetch(`http://localhost:8080/session/login/`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              username: logName.value,
-              password: logPassword.value
+    
+        fetch(`http://localhost:${location.port}/session/register/`, { 
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            username: email.value,
+            password: password.value,
+            name: name.value,
+            address: address.value,
+            age: age.value,
+            phone: phoneNumber,
+          })
+        })
+        .then(response => {
+          if( response.status === 401 ){
+           
+          } else {
+
+            fetch(`http://localhost:${location.port}/session/login/`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                user: email.value,
+                password: password.value
+              })
             })
-          })
-          .then( response => { 
-            location.href = 'index.html'
-          })
-          .catch(error => {
-            console.log('FATAL ERROR : ', error)
-          })
-        }
-      })
-    }
-  }
+            .then( response => { 
+              location.reload()
+            })
+            .catch(error => {
+              console.log('FATAL ERROR: ', error)
+            })
+          }
+        })
 
+    } 
+  })
 
-})
+  cancelRegisterBtn.addEventListener("click", ev => {
+    location.reload()
+  })
+
+}
